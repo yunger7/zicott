@@ -15,8 +15,6 @@
   <img src="https://img.shields.io/github/license/yunger7/zicott?colorA=4c566a&colorB=5E81AC&label=License&logo=github&logoColor=ECEFF4&style=flat-square" />
 </p>
 
-<!-- Badges -->
-
 ## About
 Zicott is a Gluegun-powered CLI for quickly downloading YouTube videos as MP3. It's a simple tool that I've build for my personal usage, so don't expect it to be heavily maintained. Personally, I've been using YouTube to listen to music, but there are a couple of problems with it:
 - Ads.
