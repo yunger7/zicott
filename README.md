@@ -28,10 +28,10 @@ So that's why this tool exists.
 
 ## Install
 ```
-git clone https://github.com/yunger7/zicott.git
-cd zicott
-npm install -g
-zicott --help
+$ git clone https://github.com/yunger7/zicott.git
+$ cd zicott
+$ npm install -g
+$ zicott --help
 ```
 
 ## Usage
