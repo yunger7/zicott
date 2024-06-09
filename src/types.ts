@@ -14,7 +14,8 @@ export interface ZicottToolbox extends GluegunToolbox {
 		download: (id: string, ffmpeg?: string, output?: string) => Promise<void>;
 	};
 	utils: {
-		isValidPath: (path: string) => Promise<boolean>;
+		isValidPath: (path: string) => boolean;
+        isValidFilename: (text: string) => boolean;
         stringToFilename: (text: string) => string | undefined;
 	};
 }

@@ -43,14 +43,25 @@ const extension = (toolbox: ZicottToolbox) => {
 		);
 
 		try {
-			if (ffmpegPath && !(await utils.isValidPath(ffmpegPath))) {
+			if (ffmpegPath && !(utils.isValidPath(ffmpegPath))) {
 				print.error("[ERROR]: Invalid ffmpeg path");
 				return;
 			}
 
-			if (output && !(await utils.isValidPath(output))) {
-				print.error("[ERROR]: Invalid output path");
-				return;
+			if (output) {
+                const filename = output.split("/").pop();
+
+                if (filename && !utils.isValidFilename(filename)) {
+                    print.error("[ERROR]: Invalid output path");
+                    return;
+                }
+
+                const outputPath = output.split("/").slice(0, -1).join("/");
+
+                if (outputPath && !utils.isValidPath(outputPath)) {
+                    print.error("[ERROR]: Invalid output path");
+                    return;
+                }
 			}
 
             if (ffmpegPath) {
