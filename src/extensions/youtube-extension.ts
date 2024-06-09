@@ -1,10 +1,11 @@
-import * as YoutubeMp3Downloader from "youtube-mp3-downloader";
+import * as ytdl from "ytdl-core";
+import * as ffmpeg from "fluent-ffmpeg";
 import { SingleBar, Presets } from "cli-progress";
 
 import type { ZicottToolbox } from "../types";
 
 const extension = (toolbox: ZicottToolbox) => {
-	const { print, utils } = toolbox;
+	const { print, utils, filesystem } = toolbox;
 
 	function getVideoID(url: string) {
 		const VALID_HOSTNAMES = ["youtube", "youtu.be"];
@@ -32,7 +33,7 @@ const extension = (toolbox: ZicottToolbox) => {
 		}
 	}
 
-	async function download(id: string, ffmpeg?: string, output?: string) {
+	async function download(id: string, ffmpegPath?: string, output?: string) {
 		const progressBar = new SingleBar(
 			{
 				clearOnComplete: true,
@@ -42,7 +43,7 @@ const extension = (toolbox: ZicottToolbox) => {
 		);
 
 		try {
-			if (ffmpeg && !(await utils.isValidPath(ffmpeg))) {
+			if (ffmpegPath && !(await utils.isValidPath(ffmpegPath))) {
 				print.error("[ERROR]: Invalid ffmpeg path");
 				return;
 			}
@@ -52,40 +53,54 @@ const extension = (toolbox: ZicottToolbox) => {
 				return;
 			}
 
-			const YD = new YoutubeMp3Downloader({
-				ffmpegPath: ffmpeg,
-				outputPath: output || process.cwd(),
-				queueParallelism: 1,
-				progressTimeout: 1000,
-				allowWebm: false,
-			});
+            if (ffmpegPath) {
+                ffmpeg.setFfmpegPath(ffmpegPath);
+            }
 
-			YD.download(id);
+            const videoInfo = await ytdl.getInfo(id);
+            const videoTitle = videoInfo.videoDetails.title;
+
+            const audioFormat = ytdl.chooseFormat(videoInfo.formats, { quality: "highestaudio" });
+            const audioSize = Number(audioFormat.contentLength);
+
+            const filename = utils.stringToFilename(videoTitle);
+            const outputPath = output || `${filename}.mp3`;
+
+            if (filesystem.exists(outputPath)) {
+                print.warning("[WARNING]: File already exists");
+                return;
+            }
+
+            process.on("SIGINT", () => {
+                progressBar.stop();
+                filesystem.remove(outputPath);
+                print.info("Download aborted");
+
+                process.exit();
+            });
+
+            const stream = ytdl.downloadFromInfo(videoInfo, { quality: "highestaudio" });
+
+            print.info(`[Title]: ${videoTitle}`);
+            print.info(`[Output]: ${outputPath}`);
 
 			let started = false;
 
-			YD.on("progress", ({ progress }) => {
-				if (!started) {
-					progressBar.start(progress.length, 0);
-					started = true;
-				}
-				progressBar.update(progress.transferred);
-			});
+            ffmpeg(stream)
+                .audioBitrate(320)
+                .save(outputPath)
+                .on("progress", (event) => {
+                    if (!started) {
+                        progressBar.start(audioSize, 0);
+                        started = true;
+                    }
 
-			YD.on("finished", (error, data) => {
-				progressBar.stop();
-				if (error) throw error;
-
-				print.success("Download completed successfully!");
-				print.info(`[Title]: ${data.title}`);
-				print.info(`[Output file]: ${data.file}`);
-				print.info(`[YouTube URL]: ${data.youtubeUrl}`);
-			});
-
-			YD.on("error", error => {
-				progressBar.stop();
-				throw error;
-			});
+                    progressBar.update(event.targetSize * 512);
+                })
+                .on("end", () => {
+                    progressBar.stop();
+                    print.success("Download completed successfully!");
+                });
 		} catch (error) {
 			print.error("[ERROR]: Failed to download");
 		}

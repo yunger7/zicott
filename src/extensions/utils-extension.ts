@@ -7,8 +7,18 @@ const extension = (toolbox: ZicottToolbox) => {
 		return typeof (await filesystem.inspectAsync(path)) !== "undefined";
 	}
 
+    function stringToFilename(text: string) {
+        if (!text) return;
+
+        return text
+            .replace(/[\/|\\:*?"<>]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .substring(0, 100);
+    }
+
 	toolbox.utils = {
 		isValidPath,
+        stringToFilename,
 	};
 };
 

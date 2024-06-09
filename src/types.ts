@@ -15,5 +15,6 @@ export interface ZicottToolbox extends GluegunToolbox {
 	};
 	utils: {
 		isValidPath: (path: string) => Promise<boolean>;
+        stringToFilename: (text: string) => string | undefined;
 	};
 }
