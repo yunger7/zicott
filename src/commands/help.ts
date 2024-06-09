@@ -39,12 +39,12 @@ const command: GluegunCommand = {
 		print.newline();
 		print.info(print.colors.bold("EXAMPLES"));
 		print.info("  $ zicott");
-		print.info("  $ zicott https://youtu.be/YNYXLWYcu-A");
+		print.info("  $ zicott https://youtu.be/1weNnjzaXbY");
 		print.info(
-			"  $ zicott https://youtu.be/d7V3M2DAq1E --output C:\\\\Users\\\\foo\\\\Downloads"
+			"  $ zicott https://youtu.be/d7V3M2DAq1E --output ~/Downloads/myfile.mp3"
 		);
 		print.info(
-			'  $ zicott "https://www.youtube.com/watch?v=TV0uYFPEkks&list=PLIpqsKgkQEvMUFbngp-GbW1JwDGXnxcm9&index=7"'
+			'  $ zicott "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"'
 		);
 		print.newline();
 	},

@@ -28,14 +28,11 @@ So that's why this tool exists.
 
 ## Install
 ```
-$ git clone https://github.com/yunger7/zicott.git
-$ cd zicott
-$ npm install -g
+$ npm install -g zicott
 $ zicott --help
 ```
 
 ## Usage
-<!-- First, install the CLI with `npm i -g zicott` or `yarn global add zicott`. Then, use --help -->
 ```
 $ zicott --help
 
@@ -43,16 +40,16 @@ $ zicott --help
     zicott <link?> [flags]
 
   FLAGS
-    --help (h)      Show help about a command
-    --version (v)   Show installed version
-    --output (o)    Path to output mp3 file (defaults to current working directory)
-    --ffmpeg        Path to FFmpeg binary
+    --help (h)      Show help about a command                                       
+    --version (v)   Show installed version                                          
+    --output (o)    Path to output mp3 file (defaults to current working directory) 
+    --ffmpeg        Path to FFmpeg binary                                           
 
   EXAMPLES
     $ zicott
-    $ zicott https://youtu.be/YNYXLWYcu-A
-    $ zicott https://youtu.be/d7V3M2DAq1E --output C:\\Users\\foo\\Downloads
-    $ zicott "https://www.youtube.com/watch?v=TV0uYFPEkks&list=PLIpqsKgkQEvMUFbngp-GbW1JwDGXnxcm9&index=7"
+    $ zicott https://youtu.be/1weNnjzaXbY
+    $ zicott https://youtu.be/d7V3M2DAq1E --output ~/Downloads/myfile.mp3
+    $ zicott "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"
 ```
 
 ## License
