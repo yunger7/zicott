@@ -1,10 +1,6 @@
 import type { GluegunCommand } from "gluegun";
 import type { ZicottToolbox } from "../types";
 
-/*
-	TODO: Handle duplicated mp3 files
-*/
-
 const command: GluegunCommand = {
 	run: async (toolbox: ZicottToolbox) => {
 		const { print, prompt, parameters, youtube } = toolbox;
