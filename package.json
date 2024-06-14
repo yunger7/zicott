@@ -1,7 +1,7 @@
 {
 	"name": "zicott",
 	"description": "A CLI tool to easily download YouTube music",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"license": "MIT",
 	"author": {
 		"name": "yunger",
@@ -35,8 +35,7 @@
 		"build",
 		"LICENSE",
 		"README.md",
-		"bin",
-        "src/assets"
+		"bin"
 	],
 	"dependencies": {
 		"cli-progress": "^3.11.2",
