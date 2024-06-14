@@ -1,7 +1,7 @@
 {
 	"name": "zicott",
 	"description": "A CLI tool to easily download YouTube music",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"license": "MIT",
 	"author": {
 		"name": "yunger",
@@ -26,7 +26,7 @@
 	},
 	"scripts": {
 		"dev": "tsc -w",
-		"build": "npm run clean && tsc",
+		"build": "npm run clean && tsc && cp -r ./src/assets ./build",
 		"format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
 		"clean": "rm -rf ./build",
 		"release": "npm run build && npm publish"
@@ -35,7 +35,8 @@
 		"build",
 		"LICENSE",
 		"README.md",
-		"bin"
+		"bin",
+        "src/assets"
 	],
 	"dependencies": {
 		"cli-progress": "^3.11.2",
