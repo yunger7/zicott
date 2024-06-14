@@ -9,10 +9,8 @@ async function run(argv) {
 		.version()
 		.exclude([
 			"config",
-			"semver",
 			"http",
 			"strings",
-			"system",
 			"template",
 			"patching",
 			"package-manager",
