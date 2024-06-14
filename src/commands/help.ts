@@ -34,6 +34,7 @@ const command: GluegunCommand = {
 				"--output (o)",
 				"Path to output mp3 file (defaults to current working directory)",
 			],
+            ["--playlist (p)", "Download the entire playlist"],
 			["--ffmpeg", "Path to FFmpeg binary"],
 		]);
 		print.newline();
@@ -44,7 +45,7 @@ const command: GluegunCommand = {
 			"  $ zicott https://youtu.be/d7V3M2DAq1E --output ~/Downloads/myfile.mp3"
 		);
 		print.info(
-			'  $ zicott "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"'
+			'  $ zicott -p "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"'
 		);
 		print.newline();
 	},

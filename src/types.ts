@@ -1,5 +1,11 @@
 import type { GluegunToolbox } from "gluegun";
 
+export type DownloadOptions = {
+    ffmpegPath?: string;
+    output?: string;
+    skipProgressBar?: boolean;
+};
+
 export interface ZicottToolbox extends GluegunToolbox {
 	config: null;
 	semver: null;
@@ -11,7 +17,8 @@ export interface ZicottToolbox extends GluegunToolbox {
 	packageManager: null;
 	youtube: {
 		getVideoID: (url: string) => string | undefined;
-		download: (id: string, ffmpeg?: string, output?: string) => Promise<void>;
+        getVideoIdsFromPlaylist: (url: string) => Promise<Array<string>>;
+		download: (id: string, downloadOptions: DownloadOptions) => Promise<void>;
 	};
 	utils: {
 		isValidPath: (path: string) => boolean;

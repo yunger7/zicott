@@ -1,8 +1,9 @@
 import * as ytdl from "ytdl-core";
+import * as ytpl from 'ytpl';
 import * as ffmpeg from "fluent-ffmpeg";
 import { SingleBar, Presets } from "cli-progress";
 
-import type { ZicottToolbox } from "../types";
+import type { ZicottToolbox, DownloadOptions } from "../types";
 
 const extension = (toolbox: ZicottToolbox) => {
 	const { print, utils, filesystem } = toolbox;
@@ -33,7 +34,21 @@ const extension = (toolbox: ZicottToolbox) => {
 		}
 	}
 
-	async function download(id: string, ffmpegPath?: string, output?: string) {
+    async function getVideoIdsFromPlaylist(url: string) {
+        try {
+            const playlist = await ytpl(url);
+            const videoIds = playlist.items.map((item) => item.id);
+
+            return videoIds;
+        } catch (error) {
+            print.error("[ERROR]: Failed to fetch playlist data");
+            console.log(error);
+        }
+    }
+
+	async function download(id: string, options: DownloadOptions) {
+        const { ffmpegPath, output, skipProgressBar } = options;
+
 		const progressBar = new SingleBar(
 			{
 				clearOnComplete: true,
@@ -95,23 +110,39 @@ const extension = (toolbox: ZicottToolbox) => {
             print.info(`[Title]: ${videoTitle}`);
             print.info(`[Output]: ${outputPath}`);
 
-			let started = false;
+            await new Promise((resolve, reject) => {
+                let started = false;
 
-            ffmpeg(stream)
-                .audioBitrate(320)
-                .save(outputPath)
-                .on("progress", (event) => {
-                    if (!started) {
-                        progressBar.start(audioSize, 0);
-                        started = true;
-                    }
+                ffmpeg(stream)
+                    .audioBitrate(320)
+                    .save(outputPath)
+                    .on("progress", (event) => {
+                        if (!skipProgressBar) {
+                            if (!started) {
+                                progressBar.start(audioSize, 0);
+                                started = true;
+                            }
 
-                    progressBar.update(event.targetSize * 512);
-                })
-                .on("end", () => {
-                    progressBar.stop();
-                    print.success("Download completed successfully!");
-                });
+                            progressBar.update(event.targetSize * 512);
+                        }
+                    })
+                    .on("end", () => {
+                        if (!skipProgressBar) {
+                            progressBar.stop();
+                        }
+
+                        print.success("Download completed successfully!");
+
+                        resolve(true);
+                    })
+                    .on("error", (error) => {
+                        if (!skipProgressBar && started) {
+                            progressBar.stop();
+                        }
+                        print.error(`[ERROR]: ${error.message}`);
+                        reject(error);
+                    });
+            });
 		} catch (error) {
 			print.error("[ERROR]: Failed to download");
 		}
@@ -119,6 +150,7 @@ const extension = (toolbox: ZicottToolbox) => {
 
 	toolbox.youtube = {
 		getVideoID,
+        getVideoIdsFromPlaylist,
 		download,
 	};
 };

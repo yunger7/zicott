@@ -7,18 +7,9 @@ const command: GluegunCommand = {
 
 		const options = parameters.options;
 
-		let ffmpegPath: string;
-		let outputPath: string;
-
-		if (typeof options.ffmpeg === "string") {
-			ffmpegPath = options.ffmpeg;
-		}
-
-		if (typeof options.o === "string") {
-			outputPath = options.o;
-		} else if (typeof options.output === "string") {
-			outputPath = options.output;
-		}
+		let ffmpegPath: string = options.ffmpeg || "";
+		let outputPath: string = options.o || options.output || "";
+        let downloadPlaylist: boolean = options.p || options.playlist || false;
 
 		let url = parameters.first;
 
@@ -37,11 +28,33 @@ const command: GluegunCommand = {
 			url = result.url;
 		}
 
-		const videoID = youtube.getVideoID(url);
+        if (downloadPlaylist) {
+            const videoIds = await youtube.getVideoIdsFromPlaylist(url);
 
-		if (!videoID) return;
+            if (!videoIds?.length) return;
 
-		await youtube.download(videoID, ffmpegPath, outputPath);
+            for (let i = 0; i < videoIds.length; i++) {
+                const videoId = videoIds[i];
+
+                print.info(`[Playlist]: Downloading video ${i + 1} of ${videoIds.length}`);
+                
+                await youtube.download(videoId, {
+                    ffmpegPath,
+                    output: outputPath,
+                });
+            }
+
+            return;
+        }
+
+        const videoId = youtube.getVideoID(url);
+
+        if (!videoId) return;
+
+		await youtube.download(videoId, {
+            ffmpegPath,
+            output: outputPath,
+        });
 	},
 };
 

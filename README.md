@@ -40,16 +40,17 @@ $ zicott --help
     zicott <link?> [flags]
 
   FLAGS
-    --help (h)      Show help about a command                                       
-    --version (v)   Show installed version                                          
-    --output (o)    Path to output mp3 file (defaults to current working directory) 
-    --ffmpeg        Path to FFmpeg binary                                           
+    --help (h)       Show help about a command                                       
+    --version (v)    Show installed version                                          
+    --output (o)     Path to output mp3 file (defaults to current working directory) 
+    --playlist (p)   Download the entire playlist                                    
+    --ffmpeg         Path to FFmpeg binary                                           
 
   EXAMPLES
     $ zicott
     $ zicott https://youtu.be/1weNnjzaXbY
     $ zicott https://youtu.be/d7V3M2DAq1E --output ~/Downloads/myfile.mp3
-    $ zicott "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"
+    $ zicott -p "https://www.youtube.com/watch?v=wmi_lZU392Q&list=PLjJC3hyewH5BqfdAhehFXDQ5zZjZMCGez&index=90"
 ```
 
 ## License
