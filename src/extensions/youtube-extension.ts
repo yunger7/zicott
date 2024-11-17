@@ -1,12 +1,14 @@
-import * as ytdl from "ytdl-core";
-import * as ytpl from 'ytpl';
-import * as ffmpeg from "fluent-ffmpeg";
+import os from "os";
+import ytdl from 'ytdl-core';
+import ytpl from "ytpl";
+import ffmpeg from "fluent-ffmpeg";
+import YTDlpWrap from "yt-dlp-wrap";
 import { SingleBar, Presets } from "cli-progress";
 
 import type { ZicottToolbox, DownloadOptions } from "../types";
 
 const extension = (toolbox: ZicottToolbox) => {
-	const { print, utils, filesystem } = toolbox;
+	const { print, utils, filesystem, meta } = toolbox;
 
 	function getVideoID(url: string) {
 		const VALID_HOSTNAMES = ["youtube", "youtu.be"];
@@ -46,8 +48,27 @@ const extension = (toolbox: ZicottToolbox) => {
         }
     }
 
-	async function download(id: string, options: DownloadOptions) {
+	async function download(videoId: string, options: DownloadOptions) {
         const { ffmpegPath, output, skipProgressBar } = options;
+
+        if (!meta.src) {
+            throw new Error("Failed to find CLI src folder");
+        }
+
+        const ytdlpBinaryPath = filesystem.path(meta.src, "..", "yt-dlp");
+        const ytdlpBinaryExists = await filesystem.existsAsync(ytdlpBinaryPath);
+
+        if (!ytdlpBinaryExists) {
+            print.info("Downloading yt-dlp");
+
+            await YTDlpWrap.downloadFromGithub(
+                ytdlpBinaryPath,
+                '2024.08.06',
+                os.platform(),
+            );
+        }
+
+        const ytdlp = new YTDlpWrap(ytdlpBinaryPath);
 
 		const progressBar = new SingleBar(
 			{
@@ -83,11 +104,8 @@ const extension = (toolbox: ZicottToolbox) => {
                 ffmpeg.setFfmpegPath(ffmpegPath);
             }
 
-            const videoInfo = await ytdl.getInfo(id);
+            const videoInfo = await ytdl.getInfo(videoId);
             const videoTitle = videoInfo.videoDetails.title;
-
-            const audioFormat = ytdl.chooseFormat(videoInfo.formats, { quality: "highestaudio" });
-            const audioSize = Number(audioFormat.contentLength);
 
             const filename = utils.stringToFilename(videoTitle);
             const outputPath = output || `${filename}.mp3`;
@@ -105,43 +123,44 @@ const extension = (toolbox: ZicottToolbox) => {
                 process.exit();
             });
 
-            const stream = ytdl.downloadFromInfo(videoInfo, { quality: "highestaudio" });
-
             print.info(`[Title]: ${videoTitle}`);
-            print.info(`[Output]: ${outputPath}`);
 
             await new Promise((resolve, reject) => {
                 let started = false;
 
-                ffmpeg(stream)
-                    .audioBitrate(320)
-                    .save(outputPath)
-                    .on("progress", (event) => {
-                        if (!skipProgressBar) {
-                            if (!started) {
-                                progressBar.start(audioSize, 0);
-                                started = true;
-                            }
-
-                            progressBar.update(event.targetSize * 512);
-                        }
-                    })
-                    .on("end", () => {
-                        if (!skipProgressBar) {
-                            progressBar.stop();
+                ytdlp.exec([
+                    `https://www.youtube.com/watch?v=${videoId}`,
+                    "--format",
+                    "bestaudio",
+                    "--output",
+                    outputPath,
+                ])
+                .on("progress", (progress) => {
+                    if (!skipProgressBar) {
+                        if (!started) {
+                            progressBar.start(100, 0);
+                            started = true;
                         }
 
-                        print.success("Download completed successfully!");
+                        progressBar.update(progress.percent);
+                    }
+                })
+                .on("close", () => {
+                    if (!skipProgressBar) {
+                        progressBar.stop();
+                    }
 
-                        resolve(true);
-                    })
-                    .on("error", (error) => {
-                        if (!skipProgressBar && started) {
-                            progressBar.stop();
-                        }
-                        print.error(`[ERROR]: ${error.message}`);
-                        reject(error);
-                    });
+                    print.success("Download completed successfully!");
+                    resolve(true);
+                })
+                .on("error", (error) => {
+                    if (!skipProgressBar && started) {
+                        progressBar.stop();
+                    }
+
+                    print.error(`[ERROR]: ${error.message}`);
+                    reject(error);
+                });
             });
 		} catch (error) {
 			print.error("[ERROR]: Failed to download");
