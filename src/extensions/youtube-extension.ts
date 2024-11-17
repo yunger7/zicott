@@ -59,7 +59,7 @@ const extension = (toolbox: ZicottToolbox) => {
         const ytdlpBinaryExists = await filesystem.existsAsync(ytdlpBinaryPath);
 
         if (!ytdlpBinaryExists) {
-            print.info("Downloading yt-dlp");
+            print.info("[CORE] Downloading yt-dlp binary");
 
             await YTDlpWrap.downloadFromGithub(
                 ytdlpBinaryPath,
