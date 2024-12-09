@@ -59,7 +59,7 @@ const extension = (toolbox: ZicottToolbox) => {
         const ytdlpBinaryExists = await filesystem.existsAsync(ytdlpBinaryPath);
 
         if (!ytdlpBinaryExists) {
-            print.info("[CORE] Downloading yt-dlp binary");
+            print.info("[Core]: Downloading yt-dlp binary");
 
             await YTDlpWrap.downloadFromGithub(
                 ytdlpBinaryPath,
@@ -132,6 +132,10 @@ const extension = (toolbox: ZicottToolbox) => {
                     `https://www.youtube.com/watch?v=${videoId}`,
                     "--format",
                     "bestaudio",
+                    "--embed-thumbnail",
+                    "--extract-audio",
+                    "--audio-format",
+                    "mp3",
                     "--output",
                     outputPath,
                 ])
@@ -143,7 +147,23 @@ const extension = (toolbox: ZicottToolbox) => {
                         }
 
                         progressBar.update(progress.percent);
+
+                        if (progress.percent >= 100) {
+                            progressBar.stop();
+                        }
                     }
+                })
+                .on("ytDlpEvent", (event) => {
+                    const EventMessageMap = {
+                        'ExtractAudio': 'Extracting audio',
+                        'ThumbnailsConvertor': 'Downloading thumbnail',
+                    }
+
+                    const message = EventMessageMap[event];
+
+                    if (!message) return;
+
+                    print.info(`[Info]: ${message}`)
                 })
                 .on("close", () => {
                     if (!skipProgressBar) {
