@@ -1,7 +1,7 @@
 {
 	"name": "zicott",
 	"description": "A CLI tool to easily download YouTube music",
-	"version": "0.3.5",
+	"version": "0.3.6",
 	"license": "MIT",
 	"author": {
 		"name": "yunger",
@@ -43,7 +43,6 @@
 		"gluegun": "latest",
 		"ts-node": "^10.9.2",
 		"yt-dlp-wrap": "^2.3.12",
-		"ytdl-core": "^4.11.5",
 		"ytpl": "^2.3.0"
 	},
 	"devDependencies": {

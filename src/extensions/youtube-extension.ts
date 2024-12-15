@@ -1,5 +1,4 @@
 import os from "os";
-import ytdl from 'ytdl-core';
 import ytpl from "ytpl";
 import ffmpeg from "fluent-ffmpeg";
 import YTDlpWrap from "yt-dlp-wrap";
@@ -104,9 +103,15 @@ const extension = (toolbox: ZicottToolbox) => {
                 ffmpeg.setFfmpegPath(ffmpegPath);
             }
 
-            const videoInfo = await ytdl.getInfo(videoId);
-            const videoTitle = videoInfo.videoDetails.title;
+            const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
+            const videoInfo = await ytdlp.getVideoInfo([
+                videoUrl,
+                "--format",
+                "bestaudio",
+            ]);
+
+            const videoTitle = videoInfo.title;
             const filename = utils.stringToFilename(videoTitle);
             const outputPath = output || `${filename}.mp3`;
 
@@ -129,7 +134,7 @@ const extension = (toolbox: ZicottToolbox) => {
                 let started = false;
 
                 ytdlp.exec([
-                    `https://www.youtube.com/watch?v=${videoId}`,
+                    videoUrl,
                     "--format",
                     "bestaudio",
                     "--embed-thumbnail",
