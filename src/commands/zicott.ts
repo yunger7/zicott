@@ -55,6 +55,8 @@ const command: GluegunCommand = {
             ffmpegPath,
             output: outputPath,
         });
+
+        process.exit(0);
 	},
 };
 
