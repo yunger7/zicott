@@ -77,6 +77,21 @@ const extension = (toolbox: ZicottToolbox) => {
 			Presets.shades_classic
 		);
 
+        let outputPath: string | undefined;
+
+        const cleanup = () => {
+            if (progressBar.isActive) {
+                progressBar.stop();
+            }
+
+            if (outputPath && filesystem.exists(outputPath)) {
+                filesystem.remove(outputPath);
+            }
+
+            print.info("Download interrupted. Exiting...");
+            process.exit(1);
+        };
+
 		try {
 			if (ffmpegPath && !(utils.isValidPath(ffmpegPath))) {
 				print.error("[ERROR]: Invalid ffmpeg path");
@@ -91,9 +106,9 @@ const extension = (toolbox: ZicottToolbox) => {
                     return;
                 }
 
-                const outputPath = output.split("/").slice(0, -1).join("/");
+                const outputDir = output.split("/").slice(0, -1).join("/");
 
-                if (outputPath && !utils.isValidPath(outputPath)) {
+                if (outputDir && !utils.isValidPath(outputDir)) {
                     print.error("[ERROR]: Invalid output path");
                     return;
                 }
@@ -113,20 +128,15 @@ const extension = (toolbox: ZicottToolbox) => {
 
             const videoTitle = videoInfo.title;
             const filename = utils.stringToFilename(videoTitle);
-            const outputPath = output || `${filename}.mp3`;
+
+            outputPath = output || `${filename}.mp3`;
 
             if (filesystem.exists(outputPath)) {
                 print.warning("[WARNING]: File already exists");
                 return;
             }
 
-            process.on("SIGINT", () => {
-                progressBar.stop();
-                filesystem.remove(outputPath);
-                print.info("Download aborted");
-
-                process.exit();
-            });
+            process.on("SIGINT", cleanup);
 
             print.info(`[Title]: ${videoTitle}`);
 
@@ -189,7 +199,9 @@ const extension = (toolbox: ZicottToolbox) => {
             });
 		} catch (error) {
 			print.error("[ERROR]: Failed to download");
-		}
+		} finally {
+            process.off("SIGINT", cleanup);
+        }
 	}
 
 	toolbox.youtube = {
