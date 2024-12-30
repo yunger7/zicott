@@ -11,7 +11,7 @@ const command: GluegunCommand = {
 		let outputPath: string = options.o || options.output || "";
         let downloadPlaylist: boolean = options.p || options.playlist || false;
 
-		let url = parameters.first;
+		let url = parameters.options.p || parameters.first;
 
 		if (!url) {
 			const result = await prompt.ask({
