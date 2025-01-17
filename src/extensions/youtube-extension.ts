@@ -62,7 +62,7 @@ const extension = (toolbox: ZicottToolbox) => {
 
             await YTDlpWrap.downloadFromGithub(
                 ytdlpBinaryPath,
-                '2024.08.06',
+                '2025.01.15',
                 os.platform(),
             );
         }
