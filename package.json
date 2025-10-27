@@ -3,6 +3,7 @@
 	"description": "A CLI tool to easily download YouTube music",
 	"version": "0.3.11",
 	"license": "MIT",
+    "packageManager": "pnpm@10.14.0",
 	"author": {
 		"name": "yunger",
 		"url": "https://yunger.dev"
