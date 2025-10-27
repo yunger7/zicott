@@ -30,7 +30,7 @@
 		"build": "npm run clean && tsc && cp -r ./src/assets ./build",
 		"format": "prettier --write \"./src/**/*.{js,ts,json}\"",
 		"lint": "tsc --noemit && eslint \"./src/**/*.{js,ts}\"",
-		"clean": "rimraf node_modules ./build",
+		"clean": "rimraf ./build",
 		"release": "npm run build && npm publish"
 	},
 	"files": [
