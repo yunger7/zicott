@@ -1,4 +1,3 @@
-import os from "os";
 import ytpl from "ytpl";
 import ffmpeg from "fluent-ffmpeg";
 import YTDlpWrap from "yt-dlp-wrap";
@@ -60,11 +59,7 @@ const extension = (toolbox: ZicottToolbox) => {
         if (!ytdlpBinaryExists) {
             print.info("[Core]: Downloading yt-dlp binary");
 
-            await YTDlpWrap.downloadFromGithub(
-                ytdlpBinaryPath,
-                '2025.09.26',
-                os.platform(),
-            );
+            await YTDlpWrap.downloadFromGithub(ytdlpBinaryPath);
         }
 
         const ytdlp = new YTDlpWrap(ytdlpBinaryPath);
